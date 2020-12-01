@@ -71,12 +71,12 @@ class signframe extends JFrame{
 	        sex.add(female);
 	        Label lab4=new Label("직 책 : ");
 	      JRadioButton trainer = new JRadioButton("트레이너");
-	        JRadioButton trainee = new JRadioButton("회원");
-	        trainee.setSelected(true);
-	        ButtonGroup member = new ButtonGroup();
-	        member.add(trainer);
-	        member.add(trainee);
-	        Label lab5=new Label("나 이 : ");
+	      JRadioButton trainee = new JRadioButton("회원");
+	      trainee.setSelected(true);
+	      ButtonGroup member = new ButtonGroup();
+	      member.add(trainer);
+	      member.add(trainee);
+	      Label lab5=new Label("나 이 : ");
 	      TextField txt5=new TextField(10);
 	      JButton signin=new JButton("회원가입");
 	      p.add(lab1);
