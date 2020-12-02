@@ -54,7 +54,9 @@ class TrainerGUI extends JFrame{
 			setAlwaysOnTop(true);
 			setBounds(400, 200, 500, 300);
 			String[] colNames = new String[] {"Id", "Name", "Gender","Age"};
-			DefaultTableModel model = new DefaultTableModel(colNames, 0);
+			DefaultTableModel model = new DefaultTableModel(colNames, 0) {
+				public boolean isCellEditable(int i, int c){ return false; }
+			};
 			JTable table = new JTable(model);
 			JScrollPane scrollPane = new JScrollPane(table);
 			add(scrollPane, BorderLayout.CENTER);	

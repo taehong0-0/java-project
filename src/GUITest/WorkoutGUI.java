@@ -6,6 +6,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -26,14 +28,158 @@ public class WorkoutGUI {
         });
     }
 }
+class DateSelect extends JFrame implements MouseListener{
 
+	Date selectedDate;
+	String[] colNames = new String[] {"Year", "Month", "Day"};
+	DefaultTableModel model = new DefaultTableModel(colNames, 0){
+		public boolean isCellEditable(int i, int c){ return false; }
+	};
+	JTable table = new JTable(model);
+	JScrollPane scrollPane = new JScrollPane(table);
+	public DateSelect(int id) {
+		ArrayList<WorkoutList> workoutlist = null;
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setAlwaysOnTop(true);
+		setBounds(400, 200, 500, 300);
+		JTable table = new JTable(model);
+		JScrollPane scrollPane = new JScrollPane(table);
+		
+		JPanel panel = new JPanel();
+		JButton add=new JButton("검색");
+		panel.add(add);
+		add(scrollPane, BorderLayout.CENTER);
+		//add(panel);
+		for(int i=0;i<Main.memberSet.size();i++) {
+			if(Main.memberSet.get(i).getId()==id) {
+				workoutlist = ((Trainee)Main.memberSet.get(i)).listOfWorkOut();
+				break;
+			}
+		}
+		String[] row=new String[3];
+		if(workoutlist.size()==0) {
+			JOptionPane.showMessageDialog(null,"운동리스트가 아직 없습니다.");
+		}
+		else {
+		for(int i=0;i<workoutlist.size();i++) {
+			Date date=workoutlist.get(i).getDate();
+			row[0]=Integer.toString(date.getYear());
+			row[1]=Integer.toString(date.getMonth());
+			row[2]=Integer.toString(date.getDay());
+			model.addRow(row);
+			}
+
+		add(panel,BorderLayout.SOUTH);
+		setVisible(true);
+
+		table.addMouseListener(this);
+		}
+		add.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				WorkoutFrame.model.setNumRows(0);
+				int row = table.getSelectedRow();
+				Date date=new Date(Integer.valueOf((String) table.getModel().getValueAt(row,0)),Integer.valueOf((String)table.getModel().getValueAt(row,1)),Integer.valueOf((String)table.getModel().getValueAt(row,2)));
+				int findID=0;
+				
+				for(Member m : Main.memberSet) {
+					if(m.getId()==id) {
+						break;
+					}
+					findID++;
+				}
+
+				ArrayList<WorkoutList> list = ((Trainee)Main.memberSet.get(findID)).listOfWorkOut();
+				int idx=0;
+				int searchTag=0;
+				for(int j = 0;j<list.size();j++) {
+					if(list.get(j).getDate().equals(date))
+					{
+						idx=j;
+						//System.out.println(list.get(idx).getExerciseList().size());
+						for(int i=0; i<list.get(idx).getExerciseList().size();i++) {
+							String[] row1 = new String[8];
+							row1[0] = list.get(idx).getExerciseList().get(i).getExName();
+							row1[1] = list.get(idx).getExerciseList().get(i).getTargetMuscle();
+							row1[2] = String.valueOf(list.get(idx).getExerciseList().get(i).getSet());
+							row1[3] = String.valueOf(list.get(idx).getExerciseList().get(i).getReps());
+							row1[4] = String.valueOf(list.get(idx).getExerciseList().get(i).getWeight());
+							row1[5] = String.valueOf(list.get(idx).getDate().getYear());
+							row1[6] = String.valueOf(list.get(idx).getDate().getMonth());
+							row1[7] = String.valueOf(list.get(idx).getDate().getDay());
+							/*for(String s:row) {
+								System.out.println(s);
+							}*/
+							WorkoutFrame.model.addRow(row1);
+						}
+						searchTag=1;
+						
+					}
+				}
+				if(searchTag==0) {
+					model.setNumRows(0);
+					JOptionPane.showMessageDialog(null, "해당 날짜에 운동 정보가 없습니다.");
+				}
+				setVisible(false);
+			}   	
+	    });
+	}
+	
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		/*int row = table.getSelectedRow();
+		int col = table.getSelectedColumn();
+		System.out.println(table.getSelectedColumn() +"       "+ col + "        " +table.getColumnCount()+table.getRowCount());
+		if(e.getClickCount()==2) {
+			row = table.getSelectedRow();
+			col = table.getSelectedColumn();
+			WorkoutFrame.setDate((String)table.getModel().getValueAt(0,0 ),(String)table.getModel().getValueAt(0,1 ),(String)table.getModel().getValueAt(0,2 ));
+
+			setVisible(false);
+		}*/
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+}
 
 class WorkoutFrame extends JFrame{
+
+    static String[] exerciseText = new String[] {"부위","이름","세트","횟수","중량","년","월","일"};
+    static DefaultTableModel model = new DefaultTableModel(exerciseText,0);
     private static final int DEFAULT_WIDTH = 1200;
     private static final int DEFAULT_HEIGHT = 500;
-    private int id;
-
+    private int id; 
     JTextField textField;
+    static JTextField exerciseDateYear = new JTextField(4);
+    static JTextField exerciseDateMonth = new JTextField(2);
+    static JTextField exerciseDateDay = new JTextField(2);
+
+   
+   
     public WorkoutFrame(int id){
         setSize(DEFAULT_WIDTH,DEFAULT_HEIGHT);
         //setResizable(false);
@@ -45,8 +191,6 @@ class WorkoutFrame extends JFrame{
         contentPlane.add(topPanel,BorderLayout.NORTH);
 
         
-        String[] exerciseText = new String[] {"부위","이름","세트","횟수","중량","년","월","일"};
-        DefaultTableModel model = new DefaultTableModel(exerciseText,0);
         
         JTable table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -82,9 +226,7 @@ class WorkoutFrame extends JFrame{
         JLabel exerciseDateDayLabel = new JLabel("일");
 
         JPanel datePanel = new JPanel();
-        JTextField exerciseDateYear = new JTextField(4);
-        JTextField exerciseDateMonth = new JTextField(2);
-        JTextField exerciseDateDay = new JTextField(2);
+
         datePanel.add(exerciseDateYear);
         datePanel.add(exerciseDateYearLabel);
         datePanel.add(exerciseDateMonth);
@@ -105,8 +247,8 @@ class WorkoutFrame extends JFrame{
         textPanel.add(exerciseDateLabel);
         textPanel.add(datePanel);
         JPanel btnPanel = new JPanel();
-        JButton addExercise = new JButton("운동 추가");
         JButton searchExercise = new JButton("운동 찾기");
+        JButton addExercise = new JButton("운동 추가");
         JButton saveExercise = new JButton("운동 저장");
         JButton deleteExercise = new JButton("워크아웃 삭제");
         
@@ -121,7 +263,6 @@ class WorkoutFrame extends JFrame{
         rightPanel.add(textPanel);
         rightPanel.add(btnPanel);
         contentPlane.add(rightPanel,BorderLayout.EAST);
-        
         //운동 추가 버튼 action
         addExercise.addActionListener(new ActionListener(){
 			@Override
@@ -192,97 +333,14 @@ class WorkoutFrame extends JFrame{
         
         //찾기 버튼 action
         searchExercise.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				model.setNumRows(0);
-				int throwTag=0;
+				{
+				new DateSelect(id);
+				}
 				//날짜가 같은 WorkoutList에서 getExercise
-				
-				ArrayList<Integer> rows = new ArrayList<>();
-				String year = exerciseDateYear.getText();
-				String month = exerciseDateMonth.getText();
-				String day = exerciseDateDay.getText();
-				try {
-				rows.add(Integer.valueOf(exerciseDateYear.getText()));
-				rows.add(Integer.valueOf(exerciseDateMonth.getText()));
-				rows.add(Integer.valueOf(exerciseDateDay.getText()));
-				int tag=0; int tag2=0;
-				
-					for(int i=0;i<3;i++) {
-						if(i==0&&(rows.get(i)>2099||rows.get(i)<1900)) {
-							tag2=1;
-							throw new Exception();
+						//id회원의 workoutList의 workout 중 date가 같은 workout의 운동 리스트의 운동
 						
-						}
-						else if(i==1&&(rows.get(i)>12||rows.get(i)<1)) {
-							tag2=1;
-							throw new Exception();
-						
-						}
-						else if(i==2&&(rows.get(i)>31||rows.get(i)<1)) {
-							tag2=1;
-							throw new Exception();
-						
-						}
-						else{
-							if(rows.get(i)==null) {
-								tag=1;
-							}
-						}
-					}
-					
-					if(tag2!=1) {
-						Date date = new Date(Integer.valueOf(exerciseDateYear.getText()),Integer.valueOf(exerciseDateMonth.getText()),Integer.valueOf(exerciseDateDay.getText()));
-							
-				       //id회원의 workoutList의 workout 중 date가 같은 workout의 운동 리스트의 운동
-						int findID=0;
-						
-						for(Member m : Main.memberSet) {
-							if(m.getId()==id) {
-								break;
-							}
-							findID++;
-						}
-
-						ArrayList<WorkoutList> list = ((Trainee)Main.memberSet.get(findID)).listOfWorkOut();
-						int idx=0;
-						int searchTag=0;
-						for(int j = 0;j<list.size();j++) {
-							if(list.get(j).getDate().equals(date))
-							{
-								idx=j;
-								//System.out.println(list.get(idx).getExerciseList().size());
-								for(int i=0; i<list.get(idx).getExerciseList().size();i++) {
-									String[] row = new String[8];
-									row[0] = list.get(idx).getExerciseList().get(i).getExName();
-									row[1] = list.get(idx).getExerciseList().get(i).getTargetMuscle();
-									row[2] = String.valueOf(list.get(idx).getExerciseList().get(i).getSet());
-									row[3] = String.valueOf(list.get(idx).getExerciseList().get(i).getReps());
-									row[4] = String.valueOf(list.get(idx).getExerciseList().get(i).getWeight());
-									row[5] = String.valueOf(list.get(idx).getDate().getYear());
-									row[6] = String.valueOf(list.get(idx).getDate().getMonth());
-									row[7] = String.valueOf(list.get(idx).getDate().getDay());
-									/*for(String s:row) {
-										System.out.println(s);
-									}*/
-									model.addRow(row);
-								}
-								searchTag=1;
-								
-							}
-						}
-						if(searchTag==0) {
-							model.setNumRows(0);
-							JOptionPane.showMessageDialog(null, "해당 날짜에 운동 정보가 없습니다.");
-						}
-					}
-				}catch(NumberFormatException err) {
-					JOptionPane.showMessageDialog(null, "날짜를 빈칸 없이 입력해주세요.");
-				}
-				catch(Exception err) {	
-					JOptionPane.showMessageDialog(null, "날짜를 올바르게 입력해주세요.");
-				}
 			}
         	
         });
@@ -382,8 +440,10 @@ class WorkoutFrame extends JFrame{
         	
         	
         });
+        
     
     }
+    
    
 
 }

@@ -54,7 +54,7 @@ class signframe extends JFrame{
 		}
 	   public signframe()
 	   {
-		   boolean duplicateChk = false;
+		  boolean duplicateChk = false;
 	      this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	      Panel p = new Panel();
 	      Label lab1=new Label("¾Æ ÀÌ µð : ");
@@ -192,7 +192,9 @@ class trainerList extends JFrame{
 		setAlwaysOnTop(true);
 		setBounds(200, 100, 400, 200);
 		String[] colNames = new String[] {"Id", "Name", "Gender"};
-		DefaultTableModel model = new DefaultTableModel(colNames, 0);
+		DefaultTableModel model = new DefaultTableModel(colNames, 0){
+			public boolean isCellEditable(int i, int c){ return false; }
+		};;
 		JTable table = new JTable(model);
 		JScrollPane scrollPane = new JScrollPane(table);
 		add(scrollPane, BorderLayout.CENTER);
