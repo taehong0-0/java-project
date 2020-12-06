@@ -1,108 +1,121 @@
-package project;
+package GUITest;
 
 
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-class WorkoutList {
-	private ArrayList<Exercise> exerciseList = new ArrayList<>();
+
+/**
+ * 각 회원이 가지고 있는 워크아웃 리스트를 저장하는 클래스
+ * @author 승균
+ *
+ */
+class WorkoutList implements Comparable<WorkoutList>{
+	private ArrayList<Exercise> exerciseList;
 	private Date exerciseDate;
-	private double weight;
 	
 	public WorkoutList() {
-		addWorkout();
+		this.exerciseList = new ArrayList<>();
+		this.exerciseDate = new Date();
 	}
 	
-	public WorkoutList(int dy,int dm,int dd, double weight) {
-		this.weight=weight;
+	public WorkoutList(int dy,int dm,int dd) {
 		this.exerciseDate =  new Date(dy,dm,dd);
 	}
+	
 	public void addExercise(Exercise exercise) {
 		exerciseList.add(exercise);
 	}
 	
-	public void addWorkout() {
-		System.out.println("날짜 입력 : yyyy mm dd");
-		int year,month,day;
-		Scanner in = new Scanner(System.in);
-		year = in.nextInt();
-		month = in.nextInt();
-		day = in.nextInt();
-		System.out.println("몸무게 입력 : ");
-		double w = in.nextDouble();
-		exerciseDate = new Date(year,month, day);
-		this.weight = w;
-		setExercise();
-	}
-	public void setExercise() {
-		Scanner in = new Scanner(System.in);
-		int end=0;
-		while(end==0) {
-			try {
-				String exName = null,targetMuscle = null;
-				int reps = 0,set = 0;
-				double weight = 0;
-				int confirm = 0;
-				while(confirm == 0){
-					System.out.println("부위 종목이름 횟수 세트수 무게: ");
-					targetMuscle = in.nextLine();
-					exName = in.nextLine();
-					reps = in.nextInt();
-					set = in.nextInt();
-					weight = in.nextDouble();
-					System.out.println("부위 : "+targetMuscle+" 종목이름 : "+exName+" 횟수 : "+reps+" 세트수 : "+set+" 무게 : "+weight);
-					System.out.println("입력하신 정보가 맞으면 '1'을, 다시 입력하시려면 '0'을 입력해주세요 : ");
-					confirm = in.nextInt();
-				}
-				Exercise add = new Exercise(exName,targetMuscle,reps,set,weight);
-				exerciseList.add(add);
-				
-				System.out.print("운동을 추가하시려면 0, 완료하시려면 1 을 입력해주세요 : ");
-				end=in.nextInt();
-				
-			}catch(InputMismatchException e) {
-				System.out.println("입력 형식을 지켜주세요. 다시 시도해주세요.");
-			}
-		}
-	}
-	
-	public void getExercise(int idx) {
-		System.out.println("날짜 : "+this.exerciseDate.toString());
-		System.out.println("몸무게 : "+this.weight);
-		System.out.println("----------------------루틴-------------------------");
-		for(Exercise e : exerciseList) {
-			System.out.println(e.getTargetMuscle()+" "+e.getExName()+" "+e.getSet()+"세트 "+e.getReps()+"회 "+e.getWeight()+"kg");
-		}
+	public void addWorkout(Date date, Exercise ex) {
+		this.exerciseDate = date;
+		this.exerciseList.add(ex);
 	}
 	
 	public Date getDate() {
 		return this.exerciseDate;
 	}
+	public void setDate(int y,int m,int d) {
+		this.exerciseDate = new Date(y,m,d);
+	}
+	
 	public ArrayList<Exercise> getExerciseList(){
 		return this.exerciseList;
 	}
-	public double getWeight() {
-		return this.weight;
+	public void setExerciseList(ArrayList<Exercise> exList) {
+		this.exerciseList = exList;
 	}
-	
-	
+
+
+	@Override
+	public int compareTo(WorkoutList w) {
+		return this.exerciseDate.compareTo(w.exerciseDate);
+	}
 }
 
-class Date{
-	int year;
-	int month;
-	int day;
+
+/**
+ * 날짜를 저장하는 클래스
+ * @author 승균
+ *
+ */
+class Date implements Comparable<Date>{
+	//년도
+	private int year;
+	//달
+	private int month;
+	//일
+	private int day;
+	
+	public Date() {};
+	
 	public Date(int year, int month, int day) {
 		this.year=year;
 		this.month=month;
 		this.day=day;
 	}
-	
+
+	/**
+	 * 날짜를 비교하기위한 메서드
+	 */
 	@Override
-	public String toString() {
-		String toString = this.year+"/"+this.month+"/"+this.day;
-		return toString;
+	public boolean equals(Object otherObject){
+		if(this==otherObject) return true;
+		if(otherObject==null) return false;
+		if(getClass()!=otherObject.getClass()) return false;
+		
+		Date other = (Date)otherObject;
+		return other.getYear() == this.year && other.getMonth() == this.month && other.getDay() == this.day;
+	}
+
+	public int getYear(){
+		return this.year;
+	}
+	public int getMonth(){
+		return this.month;
+	}
+	public int getDay(){
+		return this.day;
 	}
 	
+	
+	/**
+	 * Comparable 인터페이스의 메서드를 오버라이드
+	 * 날짜를 기준으로 워크아웃을 정렬하기 위함 
+	 */
+	@Override
+	public int compareTo(Date other) {
+		if(this.year<other.year) return -1;
+		else if(this.year>other.year) return 1;
+		else {
+			if(this.month<other.month) return -1;
+			else if (this.month>other.month) return 1;
+			else {
+				if(this.day<other.day) return -1;
+				else if(this.day>other.day) return 1;
+				else return 0;
+			}
+		}	
+	}
 }

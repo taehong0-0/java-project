@@ -35,6 +35,11 @@ import javax.swing.table.DefaultTableModel;
 
 
 class TrainerGUI extends JFrame{
+	/*
+	 * 트레이너의 GUI를 띄워주는 클래스 이다.
+	 * 여기서 관리하는 회원의 목록을 띄워주고
+	 * 그 회원의 워크아웃 페이지를 관리 할 수 있다.
+	 */
 		static ArrayList<Trainee> traineelist;
 		static int trainerId=0;
 		public static ArrayList<Trainee> getTraineeList() {
@@ -66,15 +71,20 @@ class TrainerGUI extends JFrame{
 			btnPanel.add(btnSelect);
 			add(btnPanel,BorderLayout.SOUTH);
 			btnSelect.addActionListener(new ActionListener() {
-
+				//회원을 고르고 선택 버튼을 눌렀을 경우이다.
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					int row = table.getSelectedRow();
-					int selectID = Integer.valueOf((String) table.getModel().getValueAt(row,0));
+					int selectID=0;
+					//아무것도 고르지 않고 선택을 누른 경우 오류메세지를 출력한다.
+					if(row==-1) JOptionPane.showMessageDialog(null,"선택을 해주십시오.");
+					else {
+						selectID = Integer.valueOf((String) table.getModel().getValueAt(row,0));
 					String selectName = (String) table.getModel().getValueAt(row,1);
 					JOptionPane.showMessageDialog(null,selectName+"님의 워크아웃 정보를 확인합니다.");
 					new WorkoutGUI(selectID);
 					setVisible(false);
+					}
 				}
 				
 			});

@@ -76,6 +76,11 @@ public class Main {
 }
 
 class TextField1 extends JFrame{
+	/*
+	 * 초기화면의 GUI 클래스이다.
+	 * 아이디를 입력받아 로그인을 하거나
+	 * 회원가입을 할 수 있다.
+	 */
 	   static int id=-1;
 	   static int login_cnt = 0;
 	   public TextField1() 
@@ -104,19 +109,23 @@ class TextField1 extends JFrame{
 	        Blogin.addActionListener( new ActionListener() {
 	             public void actionPerformed(ActionEvent e) { 
 	            if(txt.getText().length()>=5) {
+	            	//id는 4글자 이하의 숫자로만 입력받는다.
 	            	JOptionPane.showMessageDialog(null,"id는 4글자 아래만 가능합니다.");
 	            }
 	            else try {
+	            	//제대로 된 입력이 들어왔을 경우에 로그인 class로 아이디를 넘겨준다.
 	            	if(login.login(Integer.valueOf(txt.getText()))==0)
 	            		setVisible(false);
 	            	
 	  	       }catch(Exception e1) {
+	  	    	   //숫자가 아닌경우의 오류메세지를 띄워준다.
 	  	           JOptionPane.showMessageDialog(null,"숫자로 된 id를 입력해 주십시오.");
 	  	       }
 	          }
 	  } );
 	        BsignIn.addActionListener( new ActionListener() {
-	             public void actionPerformed(ActionEvent e) { 
+	             public void actionPerformed(ActionEvent e) {
+	            	//회원가입 버튼을 눌렀을 경우 회원가입 클래스의 GUI를 띄워준다.
 	                Register r = new Register();
 	                r.RegisterRun();
 	          }

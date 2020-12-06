@@ -1,4 +1,4 @@
-package project;
+package GUITest;
 
 import java.util.ArrayList;
 
@@ -8,7 +8,10 @@ class Member {
 	private int age;
 	private int id;
 	private int type;
-	private ArrayList<Exercise> exerciseList;
+
+	public Member() {
+		
+	}
 	public Member(int id, String name, String sex, int age,int type ) {
 		this.name=name;
 		this.sex=sex;
@@ -39,12 +42,5 @@ class Member {
 	}
 	public void setType(int type) {
 		this.type=type;
-	}
-	
-	public ArrayList<Exercise> getWorkout() {
-		return exerciseList;
-	}
-	public void addWorkout(Exercise exercise) {
-		this.exerciseList.add(exercise);
 	}
 }
